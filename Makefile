@@ -4,7 +4,7 @@ SPICELIBDIR=/usr/local/spice/toolkit/lib
 
 RM=/bin/rm -f
 
-FCC=gfortran
+FC=gfortran
 FFLAGS=-fPIC $(DEBUG)
 
 LD=gfortran
