@@ -2,6 +2,8 @@
 
 SPICELIBDIR=/usr/local/spice/toolkit/lib
 
+RM=/bin/rm -f
+
 FCC=gfortran
 FFLAGS=-fPIC $(DEBUG)
 
@@ -13,3 +15,6 @@ CASSINI_OBJS=cassini.o
 
 cassini: $(CASSINI_OBJS)
 	$(LD) -o $(@) $(LDOPTS) $(CASSINI_OBJS) $(LDLIBS)
+
+clean:
+	$(RM) *.o cassini
