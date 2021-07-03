@@ -1,0 +1,4 @@
+*.o
+*.meta
+cassini
+*.out
