@@ -11,7 +11,12 @@ LD=gfortran
 LDOPTS=-L$(SPICELIBDIR) -Wl,-rpath=$(SPICELIBDIR)
 LDLIBS=-lspice
 
-all: cassini initialstate
+all: analyseintegration cassini initialstate
+
+ANALYSEINTEGRATION_OBJS=analyseintegration.o
+
+analyseintegration: $(ANALYSEINTEGRATION_OBJS)
+	$(LD) -o $(@) $(LDOPTS) $(ANALYSEINTEGRATION_OBJS) $(LDLIBS)
 
 CASSINI_OBJS=cassini.o
 
@@ -24,4 +29,4 @@ initialstate: $(INITIALSTATE_OBJS)
 	$(LD) -o $(@) $(LDOPTS) $(INITIALSTATE_OBJS) $(LDLIBS)
 
 clean:
-	$(RM) *.o cassini initialstate
+	$(RM) *.o analyseintegration cassini initialstate
