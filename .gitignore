@@ -4,3 +4,4 @@ cassini
 *.out
 initialstate
 analyseintegration
+kernels/*
