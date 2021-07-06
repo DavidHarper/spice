@@ -10,6 +10,7 @@ import sys
 import glob
 import spiceypy as spice
 import rebound
+import numpy as np
 
 if len(sys.argv) < 3:
     print("Usage: ", sys.argv[0], " start-date duration")
@@ -58,7 +59,7 @@ def distance(body1, body2):
 
 def heartbeat(sim_pointer):
     sim = sim_pointer.contents
-    print(sim.t-t0,sim.dt)
+    print('%14.2f %10.2f' % (sim.t-t0,sim.dt))
     kBody = 1
     for planet in planets:
         cx = sim.particles[kBody].x - sim.particles[0].x
@@ -66,10 +67,14 @@ def heartbeat(sim_pointer):
         cz = sim.particles[kBody].z - sim.particles[0].z
         state=spice.spkezr(planet, sim.t, 'J2000', 'NONE', 'SUN')
         pv = state[0]
+        vr = spice.vhat(pv[0:3])
+        vz = spice.vhat(spice.vcrss(pv[0:3], pv[3:6]))
+        vt = spice.vhat(spice.vcrss(vz, vr))
         dx = cx - pv[0]
         dy = cy - pv[1]
         dz = cz - pv[2]
-        print(kBody, dx, dy, dz)
+        dp = np.array([dx, dy, dz], dtype = np.float)
+        print('%2d %14.3f %14.3f %14.3f' % (kBody, spice.vdot(vr, dp), spice.vdot(vt, dp), spice.vdot(vz, dp)))
         kBody = kBody + 1
 
 sim.heartbeat=heartbeat
