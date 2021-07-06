@@ -59,8 +59,9 @@ def distance(body1, body2):
 
 def heartbeat(sim_pointer):
     sim = sim_pointer.contents
-    print('%14.2f %10.2f' % (sim.t-t0,sim.dt))
+    print('# %14.2f %10.2f' % (sim.t-t0,sim.dt))
     kBody = 1
+    djd = sim.t/86400.0
     for planet in planets:
         cx = sim.particles[kBody].x - sim.particles[0].x
         cy = sim.particles[kBody].y - sim.particles[0].y
@@ -74,7 +75,7 @@ def heartbeat(sim_pointer):
         dy = cy - pv[1]
         dz = cz - pv[2]
         dp = np.array([dx, dy, dz], dtype = np.float)
-        print('%2d %14.3f %14.3f %14.3f' % (kBody, spice.vdot(vr, dp), spice.vdot(vt, dp), spice.vdot(vz, dp)))
+        print('%14.6f %2d %14.3f %14.3f %14.3f' % (djd, kBody, spice.vdot(vr, dp), spice.vdot(vt, dp), spice.vdot(vz, dp)))
         kBody = kBody + 1
 
 sim.heartbeat=heartbeat
