@@ -4,9 +4,9 @@ sudo apt-get update
 
 sudo apt-get install -y python3-pip python3-venv
 
-mkdir venv
+mkdir -p ~/venv
 
-VENV=venv/spice
+VENV=~/venv/spice
 
 python3 -m venv ${VENV}
 
