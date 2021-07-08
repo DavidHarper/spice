@@ -35,4 +35,4 @@ do
     curl -L -O "${URL}"
 done
 
-cd ..
+echo -e "Remember to run\n\nsource ${VENV}/bin/activate\n\nto initialise the Python environment."
