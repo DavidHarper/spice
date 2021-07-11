@@ -74,6 +74,9 @@ def heartbeat(sim_pointer):
         cx = sim.particles[kBody].x - sim.particles[0].x
         cy = sim.particles[kBody].y - sim.particles[0].y
         cz = sim.particles[kBody].z - sim.particles[0].z
+        cvx = sim.particles[kBody].vx - sim.particles[0].vx
+        cvy = sim.particles[kBody].vy - sim.particles[0].vy
+        cvz = sim.particles[kBody].vz - sim.particles[0].vz
         state=spice.spkezr(target, sim.t, 'J2000', 'NONE', 'SUN')
         pv = state[0]
         vr = spice.vhat(pv[0:3])
@@ -82,8 +85,13 @@ def heartbeat(sim_pointer):
         dx = cx - pv[0]
         dy = cy - pv[1]
         dz = cz - pv[2]
+        dvx = cvx - pv[3]
+        dvy = cvy - pv[4]
+        dvz = cvz - pv[5]
         dp = np.array([dx, dy, dz], dtype = float)
-        print('%14.6f %2d %14.3f %14.3f %14.3f' % (djd, kBody, spice.vdot(vr, dp), spice.vdot(vt, dp), spice.vdot(vz, dp)))
+        dv = np.array([dvx, dvy, dvz], dtype = float)
+        print('%14.6f %2d %s %14.3f %14.3f %14.3f' % (djd, kBody, "P", spice.vdot(vr, dp), spice.vdot(vt, dp), spice.vdot(vz, dp)))
+        print('%14.6f %2d %s %14.6f %14.6f %14.6f' % (djd, kBody, "V", spice.vdot(vr, dv), spice.vdot(vt, dv), spice.vdot(vz, dv)))
         kBody = kBody + 1
 
 sim.heartbeat=heartbeat
