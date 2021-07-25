@@ -15,7 +15,7 @@ from numpy.random import default_rng
 import matplotlib.pyplot as plt
 
 if len(sys.argv) < 6:
-    print("Usage: ", sys.argv[0], " start-date stepsize steps swarm-size dv")
+    print("Usage: ", sys.argv[0], " start-date stepsize steps swarm-size dv [reference-body]")
     quit()
 
 for file in glob.glob('kernels/*.*'):
@@ -26,6 +26,11 @@ dt = float(sys.argv[2]) * 86400.0
 nsteps = int(sys.argv[3])
 nswarm = int(sys.argv[4])
 dv0 = float(sys.argv[5])
+
+if len(sys.argv) > 6:
+    refbody = sys.argv[6]
+else:
+    refbody = 'CASSINI'
 
 G = 6.6743e-20 # km^3 kg^(-1) s^(-2)
 
@@ -85,7 +90,7 @@ def report(sim, kStep):
     print('# %14.2f %10.2f' % (sim.t-t0,sim.dt))
     kBody = 1
     djd = sim.t/86400.0
-    state=spice.spkezr('CASSINI', sim.t, 'J2000', 'NONE', 'SUN')
+    state=spice.spkezr(refbody, sim.t, 'J2000', 'NONE', 'SUN')
     pv = state[0]
     vr = spice.vhat(pv[0:3])
     vz = spice.vhat(spice.vcrss(pv[0:3], pv[3:6]))
