@@ -13,7 +13,7 @@ import rebound
 import numpy as np
 
 if len(sys.argv) < 3:
-    print("Usage: ", sys.argv[0], " start-date duration")
+    print("Usage: ", sys.argv[0], " start-date duration [step]")
     quit()
 
 for file in glob.glob('kernels/*.*'):
@@ -21,6 +21,10 @@ for file in glob.glob('kernels/*.*'):
 
 t0 = spice.str2et(sys.argv[1])
 days = float(sys.argv[2])
+if len(sys.argv) > 3:
+    dt = float(sys.argv[3]) * 86400.0
+else:
+    dt = 86400.0
 
 G = 6.6743e-20 # km^3 kg^(-1) s^(-2)
 
@@ -57,7 +61,7 @@ sim.add(cassini)
 targets.append('CASSINI')
 
 sim.t = t0
-sim.dt = 86400.0
+#sim.dt = 86400.0
 
 def distance(body1, body2):
     dx = body1.x - body2.x
@@ -67,6 +71,9 @@ def distance(body1, body2):
 
 def heartbeat(sim_pointer):
     sim = sim_pointer.contents
+    report(sim)
+
+def report(sim):
     print('# %14.2f %10.2f' % (sim.t-t0,sim.dt))
     kBody = 1
     djd = sim.t/86400.0
@@ -94,6 +101,12 @@ def heartbeat(sim_pointer):
         print('%14.6f %2d %s %14.6f %14.6f %14.6f' % (djd, kBody, "V", spice.vdot(vr, dv), spice.vdot(vt, dv), spice.vdot(vz, dv)))
         kBody = kBody + 1
 
-sim.heartbeat=heartbeat
+#sim.heartbeat=heartbeat
 
-sim.integrate(t0 + 86400.0 * days)
+t_end = t0 + 86400.0 * days
+sim.exact_finish_time = 1
+
+while sim.t <= t_end:
+    report(sim)
+    t_next = sim.t + dt
+    sim.integrate(t_next)
