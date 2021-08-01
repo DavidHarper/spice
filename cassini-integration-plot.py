@@ -70,6 +70,7 @@ for planet in targets:
 kVenus = 2
 kEarth = 3
 kJupiter = 5
+kSaturn = 6
 
 sim.N_active = sim.N
 
@@ -95,6 +96,7 @@ dvzs=np.empty(nsteps + 1)
 rearth=np.empty(nsteps + 1)
 rvenus=np.empty(nsteps + 1)
 rjupiter=np.empty(nsteps + 1)
+rsaturn=np.empty(nsteps + 1)
 
 def distance(body1, body2):
     dx = body1.x - body2.x
@@ -122,6 +124,7 @@ def report(sim, kStep):
     rearth[kStep]=log10(distance(sim.particles[kCassini], sim.particles[kEarth]))
     rvenus[kStep]=log10(distance(sim.particles[kCassini], sim.particles[kVenus]))
     rjupiter[kStep]=log10(distance(sim.particles[kCassini], sim.particles[kJupiter]))
+    rsaturn[kStep]=log10(distance(sim.particles[kCassini], sim.particles[kSaturn]))
 
 sim.exact_finish_time = 1
 
@@ -151,6 +154,7 @@ axs[1].legend()
 axs[2].plot(ts, rvenus, label='Venus')
 axs[2].plot(ts, rearth, label='Earth')
 axs[2].plot(ts, rjupiter, label='Jupiter')
+axs[2].plot(ts, rsaturn, label='Saturn')
 
 axs[2].legend()
 
