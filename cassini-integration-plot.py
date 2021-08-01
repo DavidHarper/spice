@@ -12,6 +12,23 @@ import spiceypy as spice
 import rebound
 import numpy as np
 import matplotlib.pyplot as plt
+import re
+
+def parse_step_size(step_str):
+    p=re.compile(r"(\d+\.?\d?)([a-zA-z]?)")
+    g=p.match(step_str).groups()
+    stepsize=float(g[0])
+    units=g[1].lower()
+    if units=='' or units=='d':
+        stepsize=stepsize*86400.0
+    elif units=='h':
+        stepsize=stepsize*3600.0
+    elif units=='m':
+        stepsize=stepsize*60.0
+    elif units!='s':
+        print("ERROR: unknown units: '" + units + "' [use d for days, h for hours, m for minutes, s for seconds]")
+
+    return stepsize
 
 if len(sys.argv) < 4:
     print("Usage: ", sys.argv[0], " start-date stepsize steps")
@@ -21,7 +38,7 @@ for file in glob.glob('kernels/*.*'):
     spice.furnsh(file)
 
 t0 = spice.str2et(sys.argv[1])
-dt = float(sys.argv[2]) * 86400.0
+dt = parse_step_size(sys.argv[2])
 nsteps = int(sys.argv[3])
 
 G = 6.6743e-20 # km^3 kg^(-1) s^(-2)
