@@ -5,7 +5,7 @@
 #
 # It also uses the SpiceyPy wrapper for NAIF SPICE
 
-from math import sqrt
+from math import sqrt, log10
 import sys
 import glob
 import spiceypy as spice
@@ -67,6 +67,10 @@ for planet in targets:
     planet = rebound.Particle(m=mPlanet, x=pv[0], y=pv[1], z=pv[2], vx=pv[3], vy=pv[4], vz=pv[5])
     sim.add(planet)
 
+kVenus = 2
+kEarth = 3
+kJupiter = 5
+
 sim.N_active = sim.N
 
 state = spice.spkezr('CASSINI', t0, 'J2000', 'NONE', 'SUN')
@@ -79,22 +83,33 @@ kCassini=sim.N-1
 sim.t = t0
 
 ts=np.empty(nsteps + 1)
+
 dxs=np.empty(nsteps + 1)
 dys=np.empty(nsteps + 1)
 dzs=np.empty(nsteps + 1)
+
 dvxs=np.empty(nsteps + 1)
 dvys=np.empty(nsteps + 1)
 dvzs=np.empty(nsteps + 1)
 
+rearth=np.empty(nsteps + 1)
+rvenus=np.empty(nsteps + 1)
+rjupiter=np.empty(nsteps + 1)
+
+def distance(body1, body2):
+    dx = body1.x - body2.x
+    dy = body1.y - body2.y
+    dz = body1.z - body2.z
+    return sqrt(dx*dx+dy*dy+dz*dz)
+
 def report(sim, kStep):
-    kBody = kCassini
     djd = sim.t/86400.0
-    cx = sim.particles[kBody].x - sim.particles[0].x
-    cy = sim.particles[kBody].y - sim.particles[0].y
-    cz = sim.particles[kBody].z - sim.particles[0].z
-    cvx = sim.particles[kBody].vx - sim.particles[0].vx
-    cvy = sim.particles[kBody].vy - sim.particles[0].vy
-    cvz = sim.particles[kBody].vz - sim.particles[0].vz
+    cx = sim.particles[kCassini].x - sim.particles[0].x
+    cy = sim.particles[kCassini].y - sim.particles[0].y
+    cz = sim.particles[kCassini].z - sim.particles[0].z
+    cvx = sim.particles[kCassini].vx - sim.particles[0].vx
+    cvy = sim.particles[kCassini].vy - sim.particles[0].vy
+    cvz = sim.particles[kCassini].vz - sim.particles[0].vz
     state=spice.spkezr('CASSINI', sim.t, 'J2000', 'NONE', 'SUN')
     pv = state[0]
     ts[kStep] = (sim.t - t0)/86400.0
@@ -104,6 +119,9 @@ def report(sim, kStep):
     dvxs[kStep] = cvx - pv[3]
     dvys[kStep] = cvy - pv[4]
     dvzs[kStep] = cvz - pv[5]
+    rearth[kStep]=log10(distance(sim.particles[kCassini], sim.particles[kEarth]))
+    rvenus[kStep]=log10(distance(sim.particles[kCassini], sim.particles[kVenus]))
+    rjupiter[kStep]=log10(distance(sim.particles[kCassini], sim.particles[kJupiter]))
 
 sim.exact_finish_time = 1
 
@@ -114,7 +132,7 @@ for kStep in range(1, nsteps+1):
     sim.integrate(t_next)
     report(sim, kStep)
 
-fig, axs = plt.subplots(2, 1, sharex=True)
+fig, axs = plt.subplots(3, 1, sharex=True)
 # Remove horizontal space between axes
 fig.subplots_adjust(hspace=0)
 
@@ -129,5 +147,11 @@ axs[1].plot(ts, dvys, label='vy')
 axs[1].plot(ts, dvzs, label='vz')
 
 axs[1].legend()
+
+axs[2].plot(ts, rvenus, label='Venus')
+axs[2].plot(ts, rearth, label='Earth')
+axs[2].plot(ts, rjupiter, label='Jupiter')
+
+axs[2].legend()
 
 plt.show()
