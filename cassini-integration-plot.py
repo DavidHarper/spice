@@ -118,12 +118,16 @@ fig, axs = plt.subplots(2, 1, sharex=True)
 # Remove horizontal space between axes
 fig.subplots_adjust(hspace=0)
 
-axs[0].plot(ts, dxs)
-axs[0].plot(ts, dys)
-axs[0].plot(ts, dzs)
+axs[0].plot(ts, dxs, label='x')
+axs[0].plot(ts, dys, label='y')
+axs[0].plot(ts, dzs, label='z')
 
-axs[1].plot(ts, dvxs)
-axs[1].plot(ts, dvys)
-axs[1].plot(ts, dvzs)
+axs[0].legend()
+
+axs[1].plot(ts, dvxs, label='vx')
+axs[1].plot(ts, dvys, label='vy')
+axs[1].plot(ts, dvzs, label='vz')
+
+axs[1].legend()
 
 plt.show()
