@@ -37,7 +37,7 @@ def seconds_to_year(ts):
 #
 # Flyby dates are from Table 3 of the paper
 # "Cassini Maneuver Experience: Finishing the Inner Cruise"
-# by T.D. goodson, D.L.Gray, Y. Hahn, F. Peralta
+# by T.D. Goodson, D.L.Gray, Y. Hahn, F. Peralta
 #
 # Start date is launch plus one day, finish date is Saturn arrival minus one day.
 #
@@ -122,6 +122,7 @@ for i in range(0, len(events)-1):
     sim.t = t_start
     sim.exact_finish_time = 1
 
+    # Add a NaN to the data to force Matplotlib to draw disjoint line segments.
     dp=cassini_offset(sim)
     t_data.append(seconds_to_year(sim.t))
     dx_data.append(dp[0])
