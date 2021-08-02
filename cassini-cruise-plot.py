@@ -78,7 +78,7 @@ dx_data=[]
 dy_data=[]
 dz_data=[]
 
-delta_t=7200.0
+delta_t=6*3600.0
 
 G = 6.6743e-20 # km^3 kg^(-1) s^(-2)
 data = spice.bodvrd('SUN','GM',1)
