@@ -147,14 +147,30 @@ for i in range(0, len(events)-1):
     dy_data.append(np.nan)
     dz_data.append(np.nan)
 
-fig, axs = plt.subplots(3, 1, sharex=True)
-# Remove horizontal space between axes
-fig.subplots_adjust(hspace=0)
+fig, ax = plt.subplots()
 
-axs[0].plot(t_data, dx_data, label='x')
+ax.plot(t_data, dx_data, label='x')
 
-axs[1].plot(t_data, dy_data, label='y')
+ax.plot(t_data, dy_data, label='y')
 
-axs[2].plot(t_data, dz_data, label='z')
+ax.plot(t_data, dz_data, label='z')
+
+y_label_values=[2000.0, 2400.0, 2800.0, 3200.0, 3600.0, 4000.0, 4400.0, 4800.0]
+kLabel=0
+
+for event in events:
+    label=event[0]
+    if label!='Start' and label!='Finish':
+        t_label = seconds_to_year(spice.str2et(event[1]))
+        y_label=y_label_values[kLabel%len(y_label_values)]
+        ax.annotate(label,
+            xy=(t_label, y_label),  # theta, radius
+            xytext=(t_label, y_label),    # fraction, fraction
+            horizontalalignment='center'
+            )
+        kLabel=kLabel+1
+
+
+ax.legend()
 
 plt.show()
