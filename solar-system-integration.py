@@ -74,7 +74,7 @@ def heartbeat(sim_pointer):
         dx = cx - pv[0]
         dy = cy - pv[1]
         dz = cz - pv[2]
-        dp = np.array([dx, dy, dz], dtype = np.float)
+        dp = np.array([dx, dy, dz], dtype = float)
         print('%14.6f %2d %14.3f %14.3f %14.3f' % (djd, kBody, spice.vdot(vr, dp), spice.vdot(vt, dp), spice.vdot(vz, dp)))
         kBody = kBody + 1
 
