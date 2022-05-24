@@ -72,6 +72,7 @@ sim.add(earthLeadingTrojan)
 tdata = []
 xdata = []
 ydata = []
+rdata = []
 
 def heartbeat(sim_pointer):
     sim = sim_pointer.contents
@@ -95,11 +96,10 @@ def heartbeat(sim_pointer):
     dyTrojan = spice.vdot(v, pTrojan) - s60 * au
     dzTrojan = spice.vdot(w, pTrojan)
 
-    print('%14.6f %14.3f %14.3f %14.3f' % (tjd, dxTrojan, dyTrojan, dzTrojan))
-
     tdata.append(tjd)
     xdata.append(dxTrojan/au)
     ydata.append(dyTrojan/au)
+    rdata.append(spice.vnorm(spice.vsub(pEarth, pTrojan))/au)
 
 
 sim.heartbeat=heartbeat
@@ -110,13 +110,13 @@ sim.integrate(86400.0 * days)
 
 fig, ax = plt.subplots(2)
 
-ax[0].plot(tdata, xdata, label='x')
-ax[0].plot(tdata, ydata, label='y')
+ax[0].plot(tdata, rdata, label='r')
 ax[0].legend()
 
 ax[1].plot([0], [0], "or")
 ax[1].plot(xdata, ydata)
 ax[1].plot([1.0-c60],[-s60], "og")
+ax[1].plot([-c60], [-s60], "oy")
 ax[1].set(aspect=1)
 
 plt.show()
