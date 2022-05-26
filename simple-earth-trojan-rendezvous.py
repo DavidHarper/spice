@@ -86,7 +86,9 @@ yTrojan = []
 rTrojan = []
 xProbe = []
 yProbe = []
-rProbe = []
+rProbeSun = []
+rProbeTrojan = []
+rProbeEarth = []
 xProbeAbs = []
 yProbeAbs = []
 
@@ -126,7 +128,9 @@ def heartbeat(sim_pointer):
 
     xProbe.append(dxProbe/au)
     yProbe.append(dyProbe/au)
-    rProbe.append(spice.vnorm(spice.vsub(pProbe, pTrojan))/au)
+    rProbeTrojan.append(spice.vnorm(spice.vsub(pProbe, pTrojan))/au)
+    rProbeEarth.append(spice.vnorm(spice.vsub(pProbe, pEarth))/au)
+    rProbeSun.append(spice.vnorm(pProbe)/au)
 
     xProbeAbs.append(probe.x/au)
     yProbeAbs.append(probe.y/au)
@@ -143,8 +147,9 @@ gs = gridspec.GridSpec(2, 2)
 
 axDistances = fig.add_subplot(gs[0, :])
 
-axDistances.plot(tdata, rTrojan, label='r[Earth-Trojan]')
-axDistances.plot(tdata, rProbe, label='r[Probe-Trojan]')
+axDistances.plot(tdata, rProbeTrojan, label='r[Probe-Trojan]')
+axDistances.plot(tdata, rProbeSun, label='r[Probe-Sun]')
+axDistances.plot(tdata, rProbeEarth, label='r[Probe-Earth]')
 axDistances.legend()
 
 axTrojanFrame = fig.add_subplot(gs[1, 0])
