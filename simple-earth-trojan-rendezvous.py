@@ -91,6 +91,8 @@ rProbeTrojan = []
 rProbeEarth = []
 xProbeAbs = []
 yProbeAbs = []
+eProbe = []
+aProbe = []
 
 def heartbeat(sim_pointer):
     sim = sim_pointer.contents
@@ -117,6 +119,11 @@ def heartbeat(sim_pointer):
 
     pProbe = np.array([probe.x - sun.x, probe.y - sun.y, probe.z - sun.z], dtype = float)
 
+    delta = spice.vnorm(spice.vsub(pProbe, pEarth))
+
+    if delta < 250000.0:
+        return
+
     dxProbe = spice.vdot(u, pProbe) - c60 * au
     dyProbe = spice.vdot(v, pProbe) - s60 * au
 
@@ -129,12 +136,19 @@ def heartbeat(sim_pointer):
     xProbe.append(dxProbe/au)
     yProbe.append(dyProbe/au)
     rProbeTrojan.append(spice.vnorm(spice.vsub(pProbe, pTrojan))/au)
-    rProbeEarth.append(spice.vnorm(spice.vsub(pProbe, pEarth))/au)
+    rProbeEarth.append(delta/au)
     rProbeSun.append(spice.vnorm(pProbe)/au)
 
     xProbeAbs.append(probe.x/au)
     yProbeAbs.append(probe.y/au)
 
+    pvProbe = np.array([probe.x, probe.y, probe.z, probe.vx, probe.vy, probe.vz], dtype=float)
+    pvSun = np.array([sun.x, sun.y, sun.z, sun.vx, sun.vy, sun.vz], dtype=float)
+
+    oscElt = spice.oscltx(spice.vsubg(pvProbe, pvSun), sim.t, gmSun)
+
+    eProbe.append(oscElt[1])
+    aProbe.append(oscElt[9]/au)
 
 sim.heartbeat=heartbeat
 sim.t = 0.0
@@ -143,7 +157,7 @@ sim.dt = 86400.0 * 0.05
 sim.integrate(86400.0 * days)
 
 fig = plt.figure(tight_layout=True)
-gs = gridspec.GridSpec(2, 2)
+gs = gridspec.GridSpec(4, 2)
 
 axDistances = fig.add_subplot(gs[0, :])
 
@@ -152,7 +166,15 @@ axDistances.plot(tdata, rProbeSun, label='r[Probe-Sun]')
 axDistances.plot(tdata, rProbeEarth, label='r[Probe-Earth]')
 axDistances.legend()
 
-axTrojanFrame = fig.add_subplot(gs[1, 0])
+axSMAProbe = fig.add_subplot(gs[1, :])
+axSMAProbe.plot(tdata, aProbe, label='a[Probe]')
+axSMAProbe.legend()
+
+axEccProbe = fig.add_subplot(gs[2, :])
+axEccProbe.plot(tdata, eProbe, label='e[Probe]')
+axEccProbe.legend()
+
+axTrojanFrame = fig.add_subplot(gs[3, 0])
 
 axTrojanFrame.plot([0], [0], "or")
 axTrojanFrame.plot(xTrojan, yTrojan, label='Trojan')
@@ -161,7 +183,7 @@ axTrojanFrame.plot([1.0-c60],[-s60], "og")
 axTrojanFrame.plot([-c60], [-s60], "oy")
 axTrojanFrame.set(aspect=1)
 
-axAbsoluteFrame = fig.add_subplot(gs[1, 1])
+axAbsoluteFrame = fig.add_subplot(gs[3, 1])
 
 axAbsoluteFrame.plot([0], [0], "oy")
 axAbsoluteFrame.plot(xProbeAbs, yProbeAbs, label="Probe")
