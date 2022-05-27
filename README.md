@@ -6,16 +6,8 @@ https://naif.jpl.nasa.gov/naif/index.html
 
 ## Pre-requisites
 
-These scripts require Python 3.
+These scripts require Python 3, with the SpiceyPy, Rebound and Matplotlib modules.
 
-They also require the following Python modules, which should be installed
-using **pip**, preferably in a **venv** virtual environment:
-
-- wheel
-- numpy
-- rebound
-- spiceypy
-- PyQt5
-- pyparsing
-- python-dateutil
-- matplotlib
+Run the script named **setup.sh** to install the required packages and modules
+on an Ubuntu 20.04 machine.  he script also downloads the required SPICE kernels
+from the NAIF web server.
