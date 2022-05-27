@@ -2,9 +2,7 @@
 
 sudo apt-get update
 
-sudo apt-get install -y python3-pip python3-venv
-
-mkdir -p ~/venv
+sudo apt-get install -y x11-utils python3-venv python3-pip python3-matplotlib
 
 VENV=~/venv/spice
 
@@ -12,9 +10,9 @@ python3 -m venv ${VENV}
 
 source ${VENV}/bin/activate
 
-for PKG in wheel numpy rebound spiceypy
+for MODULE in pyparsing python-dateutil numpy wheel rebound spiceypy matplotlib
 do
-    pip3 install $PKG
+    pip3 install ${MODULE}
 done
 
 mkdir kernels
