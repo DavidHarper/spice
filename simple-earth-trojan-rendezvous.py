@@ -88,6 +88,7 @@ xProbe = []
 yProbe = []
 rProbeSun = []
 rProbeTrojan = []
+vrProbeTrojan = []
 rProbeEarth = []
 xProbeAbs = []
 yProbeAbs = []
@@ -112,6 +113,7 @@ def heartbeat(sim_pointer):
     v = spice.vhat(spice.vcrss(w, u))
 
     pTrojan = np.array([trojan.x - sun.x, trojan.y - sun.y, trojan.z - sun.z], dtype = float)
+    vTrojan = np.array([trojan.vx - sun.vx, trojan.vy - sun.vy, trojan.vz - sun.vz], dtype = float)
 
     dxTrojan = spice.vdot(u, pTrojan) - c60 * au
     dyTrojan = spice.vdot(v, pTrojan) - s60 * au
@@ -139,6 +141,10 @@ def heartbeat(sim_pointer):
     rProbeEarth.append(delta/au)
     rProbeSun.append(spice.vnorm(pProbe)/au)
 
+    rrProbeTrojan = np.array([probe.x - trojan.x, probe.y - trojan.y, probe.z - trojan.z], dtype = float)
+    vProbeTrojan = np.array([probe.vx - trojan.vx, probe.vy - trojan.vy, probe.vz - trojan.vz], dtype = float)
+    vrProbeTrojan.append(spice.vdot(spice.vhat(rrProbeTrojan), vProbeTrojan))
+
     xProbeAbs.append(probe.x/au)
     yProbeAbs.append(probe.y/au)
 
@@ -157,7 +163,7 @@ sim.dt = 86400.0 * 0.05
 sim.integrate(86400.0 * days)
 
 fig = plt.figure(tight_layout=True)
-gs = gridspec.GridSpec(4, 2)
+gs = gridspec.GridSpec(5, 2)
 
 axDistances = fig.add_subplot(gs[0, :])
 
@@ -166,15 +172,19 @@ axDistances.plot(tdata, rProbeSun, label='r[Probe-Sun]')
 axDistances.plot(tdata, rProbeEarth, label='r[Probe-Earth]')
 axDistances.legend()
 
-axSMAProbe = fig.add_subplot(gs[1, :])
+axRelVel = fig.add_subplot(gs[1, :])
+axRelVel.plot(tdata, vrProbeTrojan, label='v[Probe-Trojan]')
+axRelVel.legend()
+
+axSMAProbe = fig.add_subplot(gs[2, :])
 axSMAProbe.plot(tdata, aProbe, label='a[Probe]')
 axSMAProbe.legend()
 
-axEccProbe = fig.add_subplot(gs[2, :])
+axEccProbe = fig.add_subplot(gs[3, :])
 axEccProbe.plot(tdata, eProbe, label='e[Probe]')
 axEccProbe.legend()
 
-axTrojanFrame = fig.add_subplot(gs[3, 0])
+axTrojanFrame = fig.add_subplot(gs[4, 0])
 
 axTrojanFrame.plot([0], [0], "or")
 axTrojanFrame.plot(xTrojan, yTrojan, label='Trojan')
@@ -183,7 +193,7 @@ axTrojanFrame.plot([1.0-c60],[-s60], "og")
 axTrojanFrame.plot([-c60], [-s60], "oy")
 axTrojanFrame.set(aspect=1)
 
-axAbsoluteFrame = fig.add_subplot(gs[3, 1])
+axAbsoluteFrame = fig.add_subplot(gs[4, 1])
 
 axAbsoluteFrame.plot([0], [0], "oy")
 axAbsoluteFrame.plot(xProbeAbs, yProbeAbs, label="Probe")
