@@ -73,8 +73,8 @@ earthLeadingTrojan = rebound.Particle(m = trojanMass*mEarth, x=pxElt, y=pyElt, z
 
 sim.add(earthLeadingTrojan)
 
-pxProbe = au + r * cos(theta)
-pyProbe = r * sin(theta)
+pxProbe = au + r * cos(theta * pi/180.0)
+pyProbe = r * sin(theta * pi/180.0)
 
 vxProbe = dvx
 vyProbe = au*nEarth + dvy
