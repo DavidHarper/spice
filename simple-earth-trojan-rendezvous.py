@@ -14,8 +14,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 
-if len(sys.argv) < 7:
-    print("Usage: ", sys.argv[0], " trojan-mass/mEarth r theta dvx dvy duration")
+if len(sys.argv) < 8:
+    print("Usage: ", sys.argv[0], " trojan-mass/mEarth r theta dvx dvy duration mindist")
     quit()
 
 spice.furnsh('kernels/gm_de431.tpc')
@@ -26,6 +26,9 @@ theta = float(sys.argv[3]) * pi/180.0
 dvx = float(sys.argv[4])
 dvy = float(sys.argv[5])
 days = float(sys.argv[6])
+mindist = float(sys.argv[7])
+
+starting = True
 
 G = 6.6743e-20 # km^3 kg^(-1) s^(-2)
 
@@ -96,6 +99,7 @@ eProbe = []
 aProbe = []
 
 def heartbeat(sim_pointer):
+    global starting
     sim = sim_pointer.contents
     #print('# %14.2f %10.2f' % (sim.t-t0,sim.dt))
     tjd = sim.t/86400.0
@@ -123,8 +127,10 @@ def heartbeat(sim_pointer):
 
     delta = spice.vnorm(spice.vsub(pProbe, pEarth))
 
-    if delta < 250000.0:
+    if starting and (delta < mindist):
         return
+
+    starting = False
 
     dxProbe = spice.vdot(u, pProbe) - c60 * au
     dyProbe = spice.vdot(v, pProbe) - s60 * au
