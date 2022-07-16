@@ -14,15 +14,17 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 
-if len(sys.argv) < 3:
-    print("Usage: ", sys.argv[0], " a[Janus] a[Epimetheus] days")
+if len(sys.argv) < 5:
+    print("Usage: ", sys.argv[0], " a[Janus] mu[Janus] a[Epimetheus] mu[Epimetheus] days")
     quit()
 
 spice.furnsh('kernels/gm_de431.tpc')
 
 aJanus = float(sys.argv[1])
-aEpimetheus = float(sys.argv[2])
-days = float(sys.argv[3])
+muJanus = float(sys.argv[2])
+aEpimetheus = float(sys.argv[3])
+muEpimetheus = float(sys.argv[4])
+days = float(sys.argv[5])
 
 G = 6.6743e-20 # km^3 kg^(-1) s^(-2)
 
