@@ -5,7 +5,7 @@
 #
 # It also uses the SpiceyPy wrapper for NAIF SPICE
 
-from math import sqrt, pi, sin, cos, atan2
+from math import sqrt, pi, sin, cos, atan2, fabs
 import sys
 import glob
 import spiceypy as spice
@@ -65,6 +65,7 @@ rEarth2Earth1 = []
 xEarth2Earth1 = []
 yEarth2Earth1 = []
 qEarth2Earth1 = []
+elEarth2 = []
 
 def heartbeat(sim_pointer):
     sim = sim_pointer.contents
@@ -96,7 +97,10 @@ def heartbeat(sim_pointer):
 
     dx = spice.vdot(u, pEarth2)
     dy = spice.vdot(v, pEarth2)
-    qEarth2Earth1.append(180.0*atan2(dy, dx)/pi)
+    qEarth2 = 180.0*atan2(dy, dx)/pi
+    qEarth2Earth1.append(qEarth2)
+
+    elEarth2.append(90.0-fabs(0.5*qEarth2))
 
 sim.heartbeat=heartbeat
 sim.t = 0.0
@@ -105,7 +109,7 @@ sim.dt = 86400.0
 sim.integrate(86400.0 * days)
 
 fig = plt.figure(tight_layout=True)
-gs = gridspec.GridSpec(4, 2)
+gs = gridspec.GridSpec(5, 2)
 
 axDistances = fig.add_subplot(gs[0, :])
 axDistances.plot(tdata, rEarth1, label='r[Earth1]')
@@ -120,7 +124,11 @@ axTheta = fig.add_subplot(gs[2, :])
 axTheta.plot(tdata, qEarth2Earth1, label='q[earth2-Earth1]')
 axTheta.legend()
 
-axEarth1Frame = fig.add_subplot(gs[3, 0])
+axElong = fig.add_subplot(gs[3, :])
+axElong.plot(tdata, elEarth2, label='el[Earth2]')
+axElong.legend()
+
+axEarth1Frame = fig.add_subplot(gs[4, 0])
 axEarth1Frame.plot([0], [0], "or")
 axEarth1Frame.plot(xEarth2Earth1, yEarth2Earth1, label='Earth2')
 axEarth1Frame.set(aspect=1)
