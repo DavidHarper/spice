@@ -5,7 +5,7 @@
 #
 # It also uses the SpiceyPy wrapper for NAIF SPICE
 
-from math import sqrt, pi, sin, cos
+from math import sqrt, pi, sin, cos, atan2
 import sys
 import glob
 import spiceypy as spice
@@ -63,6 +63,9 @@ tdata = []
 rJanus = []
 rEpimetheus = []
 rEpimetheusJanus = []
+xEpimetheus = []
+yEpimetheus = []
+qEpimetheus = []
 
 def heartbeat2(sim_pointer):
     sim = sim_pointer.contents
@@ -95,8 +98,14 @@ def heartbeat(sim_pointer):
 
     rJanus.append(spice.vnorm(pJanus) - aJanus)
     rEpimetheus.append(spice.vnorm(pEpimetheus) - aEpimetheus)
-    rEpimetheusJanus.append(spice.vnorm(spice.vsub(pEpimetheus, pJanus)))
 
+    pEpimetheusJanus = spice.vsub(pEpimetheus, pJanus)
+    rEpimetheusJanus.append(spice.vnorm(pEpimetheusJanus))
+
+    xEpimetheus.append(spice.vdot(u, pEpimetheusJanus))
+    yEpimetheus.append(spice.vdot(v, pEpimetheusJanus))
+
+    qEpimetheus.append(190.0*atan2(spice.vdot(v, pEpimetheus), spice.vdot(u, pEpimetheus))/pi)
 
 sim.heartbeat=heartbeat
 sim.t = 0.0
@@ -105,7 +114,7 @@ sim.dt = 86400.0 * 0.1
 sim.integrate(86400.0 * days)
 
 fig = plt.figure(tight_layout=True)
-gs = gridspec.GridSpec(2, 2)
+gs = gridspec.GridSpec(4, 2)
 
 axDistances = fig.add_subplot(gs[0, :])
 
@@ -116,5 +125,14 @@ axDistances.legend()
 axDelta = fig.add_subplot(gs[1, :])
 axDelta.plot(tdata, rEpimetheusJanus, label='r[Epimetheus-Janus]')
 axDelta.legend()
+
+axTheta = fig.add_subplot(gs[2, :])
+axTheta.plot(tdata, qEpimetheus, label='q[Epimetheus]')
+axTheta.legend()
+
+axJanusFrame = fig.add_subplot(gs[3, 0])
+axJanusFrame.plot([0], [0], "or")
+axJanusFrame.plot(xEpimetheus, yEpimetheus, label='Epimetheus')
+axJanusFrame.set(aspect=1)
 
 plt.show()
