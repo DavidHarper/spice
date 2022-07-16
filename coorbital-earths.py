@@ -14,16 +14,17 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 
-if len(sys.argv) < 4:
-    print("Usage: ", sys.argv[0], " a[Earth1] a[Earth2] M[Earth2]/M[Earth1] days")
+if len(sys.argv) < 5:
+    print("Usage: ", sys.argv[0], " a[Earth1] a[Earth2] mu[Earth1] mu[Earth2] days")
     quit()
 
 spice.furnsh('kernels/gm_de431.tpc')
 
 aEarth1 = float(sys.argv[1])
 aEarth2 = float(sys.argv[2])
-muEarth2 = float(sys.argv[3])
-days = float(sys.argv[4])
+muEarth1 = float(sys.argv[3])
+muEarth2 = float(sys.argv[4])
+days = float(sys.argv[5])
 
 G = 6.6743e-20 # km^3 kg^(-1) s^(-2)
 
@@ -45,7 +46,7 @@ sim.add(sun)
 nEarth1 = sqrt(gmSun/aEarth1**3)
 vEarth1 = nEarth1 * aEarth1
 
-earth1 = rebound.Particle(m=mEarth, x=aEarth1, y=0.0, z=0.0, vx=0.0, vy=vEarth1, vz=0.0)
+earth1 = rebound.Particle(m=mEarth*muEarth1, x=aEarth1, y=0.0, z=0.0, vx=0.0, vy=vEarth1, vz=0.0)
 
 sim.add(earth1)
 
@@ -99,7 +100,7 @@ def heartbeat(sim_pointer):
 
 sim.heartbeat=heartbeat
 sim.t = 0.0
-sim.dt = 86400.0 * 0.1
+sim.dt = 86400.0
 
 sim.integrate(86400.0 * days)
 
