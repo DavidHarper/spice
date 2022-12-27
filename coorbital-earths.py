@@ -13,6 +13,7 @@ import rebound
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
+import time
 
 if len(sys.argv) < 5:
     print("Usage: ", sys.argv[0], " a[Earth1] a[Earth2] mu[Earth1] mu[Earth2] days")
@@ -109,7 +110,19 @@ sim.heartbeat=heartbeat
 sim.t = 0.0
 sim.dt = 86400.0
 
+ns_start = time.time_ns()
+
 sim.integrate(86400.0 * days)
+
+ns_end = time.time_ns()
+
+ns_run = ns_end - ns_start
+
+steps = len(elEarth2)
+
+ns_per_step = ns_run/steps
+
+print(f"Ran {steps} steps in {ns_run:,} ns which is {ns_per_step:0f} ns per step")
 
 fig = plt.figure(tight_layout=True)
 gs = gridspec.GridSpec(5, 2)
