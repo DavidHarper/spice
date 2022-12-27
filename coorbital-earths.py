@@ -33,7 +33,8 @@ gmSun = data[1][0]
 mSun = gmSun/G
 
 data = spice.bodvrd('EARTH BARYCENTER','GM',1)
-mEarth = data[1][0]/G
+gmEarth = data[1][0]
+mEarth = gmEarth/G
 
 sim = rebound.Simulation()
 
@@ -43,14 +44,16 @@ sun = rebound.Particle(m=mSun)
 
 sim.add(sun)
 
-nEarth1 = sqrt(gmSun/aEarth1**3)
+gmSystem = gmSun + gmEarth * (muEarth1 + muEarth2)
+
+nEarth1 = sqrt(gmSystem/aEarth1**3)
 vEarth1 = nEarth1 * aEarth1
 
 earth1 = rebound.Particle(m=mEarth*muEarth1, x=aEarth1, y=0.0, z=0.0, vx=0.0, vy=vEarth1, vz=0.0)
 
 sim.add(earth1)
 
-nEarth2 = sqrt(gmSun/aEarth2**3)
+nEarth2 = sqrt(gmSystem/aEarth2**3)
 vEarth2 = nEarth2 * aEarth2
 
 earth2 = rebound.Particle(m=mEarth*muEarth2, x=-aEarth2, y=0.0, z=0.0, vx=0.0, vy=-vEarth2, vz=0.0)
