@@ -79,11 +79,13 @@ def output_state_vectors(sim):
         vcz = sim.particles[kBody].vz - sim.particles[0].vz
         print('%14.6f %2d %18.3f %18.3f %18.3f %14.3f %14.3f %14.3f' % (djd, kBody, cx, cy, cz, vcx, vcy, vcz))
         kBody = kBody + 1
+    sys.stdout.flush()
 
 if os.getenv('USE_WHFAST') != None:
     sim.integrator = "whfast"
     sim.ri_whfast.corrector = 17
     sim.ri_whfast.safe_mode = 0
+    sim.dt = 86400.0
 
 if step == 0:
     sim.heartbeat=heartbeat
