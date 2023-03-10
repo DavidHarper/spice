@@ -6,6 +6,7 @@
 # It also uses the SpiceyPy wrapper for NAIF SPICE
 
 from math import sqrt
+import os
 import sys
 import glob
 import spiceypy as spice
@@ -65,26 +66,6 @@ def heartbeat(sim_pointer):
     sim = sim_pointer.contents
     output_state_vectors(sim)
 
-def output_differences(sim):
-    print('# %14.2f %10.2f' % (sim.t-t0,sim.dt))
-    kBody = 1
-    djd = sim.t/86400.0
-    for planet in planets:
-        cx = sim.particles[kBody].x - sim.particles[0].x
-        cy = sim.particles[kBody].y - sim.particles[0].y
-        cz = sim.particles[kBody].z - sim.particles[0].z
-        state=spice.spkezr(planet, sim.t, 'J2000', 'NONE', 'SUN')
-        pv = state[0]
-        vr = spice.vhat(pv[0:3])
-        vz = spice.vhat(spice.vcrss(pv[0:3], pv[3:6]))
-        vt = spice.vhat(spice.vcrss(vz, vr))
-        dx = cx - pv[0]
-        dy = cy - pv[1]
-        dz = cz - pv[2]
-        dp = np.array([dx, dy, dz], dtype = float)
-        print('%14.6f %2d %14.3f %14.3f %14.3f' % (djd, kBody, spice.vdot(vr, dp), spice.vdot(vt, dp), spice.vdot(vz, dp)))
-        kBody = kBody + 1
-
 def output_state_vectors(sim):
     print('# %14.2f %10.2f' % (sim.t-t0,sim.dt))
     kBody = 1
@@ -98,6 +79,11 @@ def output_state_vectors(sim):
         vcz = sim.particles[kBody].vz - sim.particles[0].vz
         print('%14.6f %2d %18.3f %18.3f %18.3f %14.3f %14.3f %14.3f' % (djd, kBody, cx, cy, cz, vcx, vcy, vcz))
         kBody = kBody + 1
+
+if os.getenv('USE_WHFAST') != None:
+    sim.integrator = "whfast"
+    sim.ri_whfast.corrector = 17
+    sim.ri_whfast.safe_mode = 0
 
 if step == 0:
     sim.heartbeat=heartbeat
