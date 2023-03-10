@@ -13,7 +13,7 @@ import rebound
 import numpy as np
 
 if len(sys.argv) < 3:
-    print("Usage: ", sys.argv[0], " start-date duration")
+    print("Usage: ", sys.argv[0], " start-date duration [output-step]")
     quit()
 
 for file in glob.glob('kernels/*.*'):
@@ -21,6 +21,10 @@ for file in glob.glob('kernels/*.*'):
 
 t0 = spice.str2et(sys.argv[1])
 days = float(sys.argv[2])
+step = 0
+
+if len(sys.argv) >3:
+    step = float(sys.argv[3])
 
 G = 6.6743e-20 # km^3 kg^(-1) s^(-2)
 
@@ -59,6 +63,9 @@ def distance(body1, body2):
 
 def heartbeat(sim_pointer):
     sim = sim_pointer.contents
+    output_differences(sim)
+
+def output_differences(sim):
     print('# %14.2f %10.2f' % (sim.t-t0,sim.dt))
     kBody = 1
     djd = sim.t/86400.0
@@ -78,6 +85,14 @@ def heartbeat(sim_pointer):
         print('%14.6f %2d %14.3f %14.3f %14.3f' % (djd, kBody, spice.vdot(vr, dp), spice.vdot(vt, dp), spice.vdot(vz, dp)))
         kBody = kBody + 1
 
-sim.heartbeat=heartbeat
-
-sim.integrate(86400.0 * days)
+if step == 0:
+    sim.heartbeat=heartbeat
+    sim.integrate(t0 + 86400.0 * days)
+else:
+    tNext = 0
+    while True:
+        tNext += step
+        if tNext > days:
+            break
+        sim.integrate(t0 + 86400.0 * tNext)
+        output_differences(sim)
