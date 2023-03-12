@@ -130,6 +130,8 @@ if os.getenv('USE_WHFAST') != None:
     sim.ri_whfast.corrector = 17
     sim.ri_whfast.safe_mode = 0
     sim.dt = 86400.0
+else:
+    sim.ri_ias15.min_dt = 60000.0
 
 if step == 0:
     sim.heartbeat=heartbeat
