@@ -5,9 +5,8 @@
 #
 # It also uses the SpiceyPy wrapper for NAIF SPICE
 
-from math import sqrt, pi, sin, cos, atan2, fabs, log10, asin
+from math import sqrt, pi, atan2, fabs, log10, asin
 import sys
-import glob
 import spiceypy as spice
 import rebound
 import numpy as np
@@ -175,6 +174,5 @@ axEarth1Frame = fig.add_subplot(gs[6, 0])
 axEarth1Frame.plot([0], [0], "or")
 axEarth1Frame.plot(xEarth2Earth1, yEarth2Earth1, label='Earth2')
 axEarth1Frame.set(aspect=1)
-
 
 plt.show()
