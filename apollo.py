@@ -35,7 +35,7 @@ aeEarth = 6378
 
 data = spice.bodvrd('MOON','GM',1)
 gmMoon = data[1][0]
-mMoon = gmEarth/G
+mMoon = gmMoon/G
 
 aeMoon = 1738
 
