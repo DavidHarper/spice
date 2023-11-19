@@ -58,6 +58,7 @@ moon = rebound.Particle(m=mMoon, x=aMoon, y=0.0, z=0.0, vx=0.0, vy=vMoon, vz=0.0
 
 sim.add(moon)
 
+# Circular parking orbit
 aApollo0 = aeEarth + altitude
 nApollo0 = sqrt(gmEarth/aApollo0**3)
 vApollo0 = nApollo0 * aApollo0
@@ -65,10 +66,13 @@ vApollo0 = nApollo0 * aApollo0
 x0Apollo = aApollo0 * cos(phase)
 y0Apollo = aApollo0 * sin(phase)
 
+# Hohmann transfer orbit
 aApollo1 = 0.5 * ( aeEarth + altitude + aMoon )
 vApollo1 = sqrt(gmEarth * (2.0/aApollo0 - 1.0/aApollo1))
+nApollo1 = sqrt(gmEarth/aApollo1**3)
+tApollo1 = (pi/nApollo1)/86400.0
 
-print("At altitude %.2f km, circular velocity is %.3f km/s, Hohmann transfer velocity is %.3f km/s" % (altitude, vApollo0, vApollo1))
+print("At altitude %.2f km, circular velocity is %.3f km/s, Hohmann transfer velocity is %.3f km/s with transit time of %.2f days" % (altitude, vApollo0, vApollo1, tApollo1))
 
 vApollo1 = vApollo1 + deltav
 
