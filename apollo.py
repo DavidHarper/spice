@@ -14,8 +14,8 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 import time
 
-if len(sys.argv) < 4:
-    print("Usage: ", sys.argv[0], " altitude phase delta-V days")
+if len(sys.argv) < 5:
+    print("Usage: ", sys.argv[0], " altitude phase delta-V days [step]")
     quit()
 
 spice.furnsh('kernels/gm_de431.tpc')
@@ -24,6 +24,11 @@ altitude = float(sys.argv[1])
 phase = float(sys.argv[2]) * pi/180.0
 deltav = float(sys.argv[3])
 days = float(sys.argv[4])
+
+step = None
+
+if len(sys.argv) > 5:
+    step = float(sys.argv[5])
 
 G = 6.6743e-20 # km^3 kg^(-1) s^(-2)
 
@@ -94,6 +99,9 @@ yApolloMoon = []
 
 def heartbeat(sim_pointer):
     sim = sim_pointer.contents
+    report(sim)
+
+def report(sim):
     tjd = sim.t/86400.0
 
     earth = sim.particles[0]
@@ -124,13 +132,21 @@ def heartbeat(sim_pointer):
     xApolloMoon.append(spice.vdot(u, pApolloMoon))
     yApolloMoon.append(spice.vdot(v, pApolloMoon))
 
-sim.heartbeat=heartbeat
 sim.t = 0.0
-sim.dt = 86400.0
+sim.dt = 3600.0
+
+tend = 86400.0 * days
 
 ns_start = time.time_ns()
 
-sim.integrate(86400.0 * days)
+if step is not None:
+    while sim.t < tend:
+        tnext = sim.t + step
+        sim.integrate(tnext, exact_finish_time=1)
+        report(sim)
+else:
+    sim.heartbeat=heartbeat
+    sim.integrate(tend)
 
 ns_end = time.time_ns()
 
