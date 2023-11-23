@@ -15,7 +15,7 @@ import matplotlib.gridspec as gridspec
 import time
 
 if len(sys.argv) < 5:
-    print("Usage: ", sys.argv[0], " altitude phase delta-V days [step]")
+    print("Usage: ", sys.argv[0], " altitude phase delta-V days [seconds per step]")
     quit()
 
 spice.furnsh('kernels/gm_de431.tpc')
